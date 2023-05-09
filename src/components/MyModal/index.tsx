@@ -1,11 +1,14 @@
 import React, { Dispatch, FC } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
+
+import { Data } from "@root/interfaces";
 
 interface MyModalProps {
   modalShow: boolean;
   setModalShow: Dispatch<React.SetStateAction<boolean>>;
+  data: Data;
 }
-const MyModal: FC<MyModalProps> = ({ modalShow, setModalShow }) => {
+const MyModal: FC<MyModalProps> = ({ modalShow, setModalShow, data }) => {
   return (
     <Modal
       show={modalShow}
@@ -15,14 +18,10 @@ const MyModal: FC<MyModalProps> = ({ modalShow, setModalShow }) => {
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">Modal heading</Modal.Title>
+        <Modal.Title id="contained-modal-title-vcenter">Предварительный просмотр документа</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <h4>Centered Modal</h4>
-        <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-          Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-        </p>
+      <Modal.Body className="d-flex justify-content-center">
+        {data.status === "loading" && <Spinner animation="border" />}
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={() => setModalShow(false)}>Закрыть</Button>

@@ -2,23 +2,51 @@ import React, { ChangeEvent, FC, FormEvent, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 
 import MyModal from "../MyModal";
+import { Data } from "@root/interfaces";
+import { generateData } from "@root/utils/generateData";
 import { checkLink } from "@root/utils/validate";
 
 interface MyForm {
   disabled: boolean;
+  accessToken: string;
 }
-const MyForm: FC<MyForm> = ({ disabled }) => {
+
+const MyForm: FC<MyForm> = ({ disabled, accessToken }) => {
   const [modalShow, setModalShow] = useState(false);
   const [alertShow, setAlertShow] = useState(false);
+
+  const [data, setData] = useState<Data>({ status: "loading" });
 
   const [inputValue, setInputValue] = useState({
     googleSheetsLink: "",
     googleDocsLink: "",
   });
 
+  const inputValidate = () => {
+    return checkLink(inputValue.googleDocsLink, "docs") && checkLink(inputValue.googleSheetsLink, "sheets");
+  };
+
+  const handleClickView = async () => {
+    setAlertShow(!inputValidate());
+    if (inputValidate()) {
+      setModalShow(true);
+      const generateDataResponse = await generateData(
+        inputValue.googleSheetsLink,
+        inputValue.googleDocsLink,
+        accessToken
+      );
+      const error = generateDataResponse.docsError.length || generateDataResponse.errorGoogleSheets;
+      setData({
+        status: error ? "error" : "success",
+        generateData: generateDataResponse,
+      });
+    }
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setAlertShow(!(checkLink(inputValue.googleDocsLink, "docs") && checkLink(inputValue.googleSheetsLink, "sheets")));
+    setAlertShow(!inputValidate());
+    generateData(inputValue.googleSheetsLink, inputValue.googleDocsLink, accessToken);
   };
 
   const onchangeValue = (scope: string) => (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,11 +84,11 @@ const MyForm: FC<MyForm> = ({ disabled }) => {
           </Form.Group>
           <div className="mb-3 d-flex justify-content-end">
             <div className="d-flex flex-column gap-3 col-md-3">
-              <Button variant="primary" onClick={() => setModalShow(true)}>
-                Предпросмотр
+              <Button variant="primary" onClick={handleClickView}>
+                Предварительный просмотр
               </Button>
               <Button variant="primary" type="submit">
-                Скачать
+                Получить файл
               </Button>
             </div>
           </div>
@@ -71,7 +99,7 @@ const MyForm: FC<MyForm> = ({ disabled }) => {
           Неправильный формат ссылок!
         </Alert>
       )}
-      <MyModal modalShow={modalShow} setModalShow={setModalShow} />
+      <MyModal modalShow={modalShow} setModalShow={setModalShow} data={data} />
     </>
   );
 };

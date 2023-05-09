@@ -3,19 +3,21 @@ import React, { Dispatch, FC, useState } from "react";
 import { Alert, Button } from "react-bootstrap";
 
 interface LoginProps {
-  setLoginStatus: Dispatch<React.SetStateAction<boolean>>;
+  setAccessToken: Dispatch<React.SetStateAction<string>>;
 }
-const Login: FC<LoginProps> = ({ setLoginStatus }) => {
+const Login: FC<LoginProps> = ({ setAccessToken }) => {
   const [error, setError] = useState("");
   const [buttonValue, setButtonValue] = useState("Получить токен доступа");
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      if (tokenResponse.scope.split(" ").includes("https://www.googleapis.com/auth/documents.readonly")) {
-        setLoginStatus(true);
-        setButtonValue("Токен доступа получен");
-      } else setError("Токен доступа не получен!");
+      setAccessToken(tokenResponse.access_token);
+      setButtonValue("Токен доступа получен");
     },
+    onError: () => {
+      setError("Токен доступа не получен!");
+    },
+    scope: "https://www.googleapis.com/auth/documents.readonly",
   });
 
   return (
