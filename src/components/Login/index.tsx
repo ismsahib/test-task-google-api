@@ -9,6 +9,7 @@ const Login: FC<LoginProps> = ({ setAccessToken }) => {
   const [error, setError] = useState("");
   const [buttonValue, setButtonValue] = useState("Получить токен доступа");
 
+  // логин через гугл аккаунт для получения токена доступа
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setAccessToken(tokenResponse.access_token);

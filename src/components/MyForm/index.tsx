@@ -1,9 +1,10 @@
-import React, { ChangeEvent, FC, FormEvent, useState } from "react";
-import { Alert, Button, Form } from "react-bootstrap";
+import React, { ChangeEvent, Dispatch, FC, FormEvent, useEffect, useState } from "react";
+import { Alert, Button, Form, Spinner } from "react-bootstrap";
 
 import MyModal from "../MyModal";
 import { Data } from "@root/interfaces";
 import { generateData } from "@root/utils/generateData";
+import { generateDocx } from "@root/utils/generateDocx";
 import { checkLink } from "@root/utils/validate";
 
 interface MyForm {
@@ -13,9 +14,10 @@ interface MyForm {
 
 const MyForm: FC<MyForm> = ({ disabled, accessToken }) => {
   const [modalShow, setModalShow] = useState(false);
-  const [alertShow, setAlertShow] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [loadingFile, setLoadingFile] = useState(false);
 
-  const [data, setData] = useState<Data>({ status: "loading" });
+  const [data, setData] = useState<Data>({ status: "loading" }); // данные для предпросмотра и скачки файла
 
   const [inputValue, setInputValue] = useState({
     googleSheetsLink: "",
@@ -26,29 +28,47 @@ const MyForm: FC<MyForm> = ({ disabled, accessToken }) => {
     return checkLink(inputValue.googleDocsLink, "docs") && checkLink(inputValue.googleSheetsLink, "sheets");
   };
 
-  const handleClickView = async () => {
-    setAlertShow(!inputValidate());
+  //получение данных из документов и занесение их в главный стейт
+
+  const fetchData = async (setState: Dispatch<React.SetStateAction<boolean>>) => {
+    //если ссылки верного формата, открывается или модальное окно, или начинается формирование файла, иначе алерт с ошибкой
+
     if (inputValidate()) {
-      setModalShow(true);
+      setState(true);
+
+      //формирование данных из документов
+
       const generateDataResponse = await generateData(
         inputValue.googleSheetsLink,
         inputValue.googleDocsLink,
         accessToken
       );
+
+      //обработка ошибок при запросах
+
       const error = generateDataResponse.docsError.length || generateDataResponse.errorGoogleSheets;
+
+      if (error) {
+        if (generateDataResponse.docsError.length) setAlertMessage(generateDataResponse.docsError);
+        if (generateDataResponse.errorGoogleSheets) setAlertMessage(generateDataResponse.errorGoogleSheets);
+      }
+
+      // внесение данных в главный стейт
+
       setData({
         status: error ? "error" : "success",
         generateData: generateDataResponse,
       });
-    }
+    } else setAlertMessage("Неправильный формат ссылок!");
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  //скачка файла
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setAlertShow(!inputValidate());
-    generateData(inputValue.googleSheetsLink, inputValue.googleDocsLink, accessToken);
+    fetchData(setLoadingFile);
   };
 
+  //изменение состояний инпутов
   const onchangeValue = (scope: string) => (e: ChangeEvent<HTMLInputElement>) => {
     switch (scope) {
       case "sheets":
@@ -59,6 +79,13 @@ const MyForm: FC<MyForm> = ({ disabled, accessToken }) => {
         break;
     }
   };
+  // если была нажата кнопка получения файла, генерируется docx файл и отправляется на скачку
+  useEffect(() => {
+    if (data.status === "success" && data.generateData && loadingFile) {
+      generateDocx(data.generateData);
+      setLoadingFile(false);
+    }
+  }, [data, loadingFile]);
 
   return (
     <>
@@ -84,19 +111,22 @@ const MyForm: FC<MyForm> = ({ disabled, accessToken }) => {
           </Form.Group>
           <div className="mb-3 d-flex justify-content-end">
             <div className="d-flex flex-column gap-3 col-md-3">
-              <Button variant="primary" onClick={handleClickView}>
+              <Button variant="primary" onClick={() => fetchData(setModalShow)}>
                 Предварительный просмотр
               </Button>
               <Button variant="primary" type="submit">
+                {loadingFile && (
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-3" />
+                )}
                 Получить файл
               </Button>
             </div>
           </div>
         </fieldset>
       </Form>
-      {alertShow && (
-        <Alert variant="danger" onClose={() => setAlertShow(false)} dismissible>
-          Неправильный формат ссылок!
+      {!!alertMessage.length && (
+        <Alert variant="danger" onClose={() => setAlertMessage("")} dismissible>
+          {alertMessage}
         </Alert>
       )}
       <MyModal modalShow={modalShow} setModalShow={setModalShow} data={data} />

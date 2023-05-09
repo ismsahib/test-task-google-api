@@ -7,7 +7,7 @@ interface DocsData {
     }>;
   };
 }
-
+//получение текста из response google docs get
 export const getArrayTextFromDocs = (content: DocsData[]): Array<string[] | undefined> => {
   const result = content.map((item) => {
     if (item.paragraph) {

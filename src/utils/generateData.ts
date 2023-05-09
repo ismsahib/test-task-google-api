@@ -1,11 +1,12 @@
 import { getGoogleDocs } from "@root/api/getGoogleDocs";
-import { GetGoogleSheetsData, getGoogleSheets } from "@root/api/getGoogleSheets";
-import { GetImageData, getImage } from "@root/api/getImage";
+import { getGoogleSheets } from "@root/api/getGoogleSheets";
+import { getImage } from "@root/api/getImage";
+import { GetGoogleSheetsData } from "@root/interfaces";
 
 export interface GenerateData {
   docsError: string;
   errorGoogleSheets: string | undefined;
-  data: (GetImageData | GetGoogleSheetsData)[];
+  data: GetGoogleSheetsData[];
 }
 
 export const generateData = async (

@@ -1,6 +1,7 @@
 import React, { Dispatch, FC } from "react";
-import { Button, Modal, Spinner } from "react-bootstrap";
+import { Alert, Button, Modal, Spinner } from "react-bootstrap";
 
+import HtmlView from "../HtmlView";
 import { Data } from "@root/interfaces";
 
 interface MyModalProps {
@@ -22,6 +23,13 @@ const MyModal: FC<MyModalProps> = ({ modalShow, setModalShow, data }) => {
       </Modal.Header>
       <Modal.Body className="d-flex justify-content-center">
         {data.status === "loading" && <Spinner animation="border" />}
+        {data.status === "error" && (
+          <Alert variant="danger">
+            {data.generateData?.docsError}
+            {data.generateData?.errorGoogleSheets}
+          </Alert>
+        )}
+        {data.status === "success" && !!data.generateData && <HtmlView data={data.generateData} />}
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={() => setModalShow(false)}>Закрыть</Button>
