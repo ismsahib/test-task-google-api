@@ -1,5 +1,5 @@
 import React, { ChangeEvent, Dispatch, FC, FormEvent, useEffect, useState } from "react";
-import { Alert, Button, Form, Spinner } from "react-bootstrap";
+import { Alert, Button, Form } from "react-bootstrap";
 
 import MyModal from "../MyModal";
 import { Data } from "@root/interfaces";
@@ -114,10 +114,7 @@ const MyForm: FC<MyForm> = ({ disabled, accessToken }) => {
               <Button variant="primary" onClick={() => fetchData(setModalShow)}>
                 Предварительный просмотр
               </Button>
-              <Button variant="primary" type="submit">
-                {loadingFile && (
-                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-3" />
-                )}
+              <Button variant="primary" type="submit" disabled={loadingFile}>
                 Получить файл
               </Button>
             </div>

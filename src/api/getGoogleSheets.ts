@@ -2,12 +2,15 @@ import axios from "axios";
 
 import { GetGoogleSheetsData } from "@root/interfaces";
 
-const API_KEY = "AIzaSyD83j76torb4XCBi1wZYyppN6OA3JKgqGc";
-
-export const getGoogleSheets = async (id: string, range: string): Promise<GetGoogleSheetsData> => {
+export const getGoogleSheets = async (id: string, range: string, accessToken: string): Promise<GetGoogleSheetsData> => {
   try {
-    const BASE_URL = `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${range}?key=${API_KEY}`;
-    const response = await axios.get(BASE_URL);
+    const BASE_URL = `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${range}`;
+    const response = await axios.get(BASE_URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return {
       fetchSheetsData: response.data.values.filter((value) => value.length !== 0),
       errorMessage: "",

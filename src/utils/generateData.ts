@@ -48,8 +48,8 @@ export const generateData = async (
 
   const googleSheetsData = await Promise.all(
     docsParametrs.map(async (range, index) => {
-      if (index === 2) return await getImage(googleSheetsId, range);
-      return await getGoogleSheets(googleSheetsId, range);
+      if (index === 2) return await getImage(googleSheetsId, range, accessToken);
+      return await getGoogleSheets(googleSheetsId, range, accessToken);
     })
   );
 

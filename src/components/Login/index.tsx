@@ -18,7 +18,7 @@ const Login: FC<LoginProps> = ({ setAccessToken }) => {
     onError: () => {
       setError("Токен доступа не получен!");
     },
-    scope: "https://www.googleapis.com/auth/documents.readonly",
+    scope: "https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/spreadsheets.readonly",
   });
 
   return (
