@@ -1,7 +1,7 @@
 import * as jose from "jose";
 
 export const generateJWT = async () => {
-  const pkcs8 = JSON.parse(process.env.PRIVATE_KEY as string).privateKey;
+  const pkcs8 = JSON.parse(process.env.PRIVATE_KEY as string);
   const payload = {
     iss: "test-task@iron-gizmo-385813.iam.gserviceaccount.com",
     scope: "https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/spreadsheets.readonly",
