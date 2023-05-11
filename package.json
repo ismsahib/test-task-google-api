@@ -19,9 +19,9 @@
     "url": "git+https://github.com/ismsahib/webpack-react-typescript-template"
   },
   "scripts": {
-    "start": "yarn webpack serve --progress --env development --env PRIVATE_KEY=$PRIVATE_KEY",
+    "start": "yarn webpack serve --progress --mode development",
     "clean": "rm -rf ./build",
-    "build": "yarn clean && webpack --progress --env production --env PRIVATE_KEY=$PRIVATE_KEY",
+    "build": "yarn clean && webpack --progress --mode production",
     "lint": "yarn eslint src --ext .js,.ts,.tsx --ignore-pattern '!.*.js' --no-error-on-unmatched-pattern",
     "lint:fix": "yarn lint --fix",
     "format": "prettier --config .prettierrc.js --check src/**/*.{js,jsx,ts,tsx}",
@@ -78,6 +78,7 @@
     "axios": "^1.4.0",
     "bootstrap": "^5.2.3",
     "docx": "^8.0.4",
+    "dotenv-webpack": "^8.0.1",
     "file-saver": "^2.0.5",
     "jose": "^4.14.4",
     "react": "^17.0.1",
