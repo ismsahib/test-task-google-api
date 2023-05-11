@@ -32,13 +32,9 @@ module.exports = (env, { mode }) => {
       }),
 
       new webpack.DefinePlugin({
-        "process.env": {
-          NODE_ENV: JSON.stringify(mode),
-        },
+        "process.env.NODE_ENV": JSON.stringify(mode),
       }),
-      new Dotenv({
-        systemvars: true,
-      }),
+      new Dotenv({ systemvars: true }),
     ],
 
     module: {
