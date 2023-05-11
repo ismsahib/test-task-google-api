@@ -8,11 +8,10 @@ import { generateDocx } from "@root/utils/generateDocx";
 import { checkLink } from "@root/utils/validate";
 
 interface MyForm {
-  disabled: boolean;
   accessToken: string;
 }
 
-const MyForm: FC<MyForm> = ({ disabled, accessToken }) => {
+const MyForm: FC<MyForm> = ({ accessToken }) => {
   const [modalShow, setModalShow] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [loadingFile, setLoadingFile] = useState(false);
@@ -90,7 +89,7 @@ const MyForm: FC<MyForm> = ({ disabled, accessToken }) => {
   return (
     <>
       <Form onSubmit={handleSubmit}>
-        <fieldset disabled={disabled}>
+        <fieldset>
           <Form.Group className="mb-3" controlId="formGoogleSheetsLink">
             <Form.Label>Таблица с данными:</Form.Label>
             <Form.Control
